@@ -15,10 +15,10 @@ class TweetController extends Controller
     public function index()
     {
         $tweets = Tweet::orderBy('created_at', 'DESC')
-        ->with(['user' => fn ($query) => $query->withCount([
-            'followers as isFollowing' => fn ($query) => $query
+        ->with(['user' => fn ($q) => $q->withCount([
+            'followers as isFollowing' => fn ($q) => $q
                 ->where('follower_id', auth()->user()->id)])
-                ->withCasts(['isFollowing' => 'boolean'])->get()
+                ->withCasts(['isFollowing' => 'boolean'])
         ])->get();
 
         return Inertia::render('Tweet/Index', [
@@ -47,8 +47,8 @@ class TweetController extends Controller
         ->whereIn('user_id', auth()->user()->followings->pluck('id'))
         ->orderBy('created_at', 'DESC')
         ->with([
-            'user' => fn ($query) => $query->withCount([
-            'followings as isFollowingUser' => fn ($query) => $query
+            'user' => fn ($q) => $q->withCount([
+            'followings as isFollowingUser' => fn ($q) => $q
                 ->where('following_id', '=', auth()->user()->id)])
                 ->withCasts(['isFollowingUser' => 'boolean'])
         ])->get();
@@ -61,15 +61,17 @@ class TweetController extends Controller
     public function profile(User $user)
     {
         $user->loadCount([
-            'followers as isFollowing' => function ($query) {
-                $query->where('follower_id', '=', auth()->user()->id)
-                ->withCasts(['isFollowing' => 'boolean']);
-            }]);
+            'followers as isFollowing' => fn ($q) =>
+                $q->where('follower_id', '=', auth()->user()->id)
+                ->withCasts(['isFollowing' => 'boolean']),
+            'followings as is_following_you' => fn ($q) => $q->where('following_id', auth()->user()->id)
+            ]);
 
-        $user->tweets;
+        $tweets = $user->tweets;
 
         return Inertia::render('Tweet/Profile', [
-            'profileUser' => $user
+            'profileUser' => $user,
+            'tweets' => $tweets
         ]);
     }
 

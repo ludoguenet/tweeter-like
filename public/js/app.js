@@ -4451,6 +4451,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -50236,7 +50237,7 @@ var render = function() {
         _c(
           "div",
           { staticClass: "max-w-3xl mx-auto sm:px-6 lg:px-8" },
-          _vm._l(_vm.profileUser.tweets, function(tweet) {
+          _vm._l(_vm.tweets, function(tweet) {
             return _c(
               "div",
               {
@@ -50266,7 +50267,13 @@ var render = function() {
                     "div",
                     { staticClass: "text-sm text-gray-400 font-thin" },
                     [_vm._v(_vm._s(tweet.content))]
-                  )
+                  ),
+                  _vm._v(" "),
+                  _vm.profileUser.is_following_you
+                    ? _c("p", { staticClass: "text-blue-400 text-xs" }, [
+                        _vm._v("Cet utilisateur vous suit")
+                      ])
+                    : _vm._e()
                 ])
               ]
             )
